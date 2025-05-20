@@ -261,7 +261,7 @@ class CustomerSupportChatbot:
                 try:
                     self.xgb_model = joblib.load("xgboost_model.pkl")
                     self.lstm_model = load_model("lstm_model.h5")
-                    st.success("Pre-trained models loaded successfully!")
+                    # st.success("Pre-trained models loaded successfully!")
                 except Exception as e:
                     st.error(f"Failed to load models: {e}")
                     st.info("Training new models...")
@@ -283,16 +283,16 @@ class CustomerSupportChatbot:
             st.info("No conversations yet. Start chatting to see analytics!")
             return
         
-        col1, col2, col3, col4 = st.columns(4)
+        col1, col2, col3 = st.columns(3)
         
         with col1:
             st.metric("Total Queries", stats["total_queries"])
         
-        with col2:
-            avg_confidence = np.mean([conf for conf in st.session_state.get("confidence_scores", [0.8])])
-            st.metric("Avg Confidence", f"{avg_confidence:.2%}")
+        # with col2:
+        #     avg_confidence = np.mean([conf for conf in st.session_state.get("confidence_scores", [0.8])])
+        #     st.metric("Avg Confidence", f"{avg_confidence:.2%}")
         
-        with col3:
+        with col2:
             if stats["sentiment_scores"]:
                 avg_sentiment = np.mean(stats["sentiment_scores"])
                 sentiment_label = "😊 Positive" if avg_sentiment > 0 else "😞 Negative" if avg_sentiment < 0 else "😐 Neutral"
@@ -300,7 +300,7 @@ class CustomerSupportChatbot:
             else:
                 st.metric("Avg Sentiment", "N/A")
         
-        with col4:
+        with col3:
             if stats["response_times"]:
                 avg_response_time = np.mean(stats["response_times"])
                 st.metric("Avg Response Time", f"{avg_response_time:.2f}s")
@@ -453,14 +453,14 @@ class CustomerSupportChatbot:
                     st.write(bot_response)
                     
                     with st.expander("View Details"):
-                        col1, col2, col3, col4 = st.columns(4)
+                        col1, col2, col3 = st.columns(3)
                         with col1:
                             st.write(f"**Category:** {category}")
+                        # with col2:
+                        #     st.write(f"**Confidence:** {confidence:.2%}")
                         with col2:
-                            st.write(f"**Confidence:** {confidence:.2%}")
-                        with col3:
                             st.write(f"**Sentiment:** {sentiment}")
-                        with col4:
+                        with col3:
                             st.write(f"**Time:** {timestamp}")
                         
                         rating = st.radio(
@@ -485,8 +485,8 @@ class CustomerSupportChatbot:
             
             response = self.generate_smart_reply(category, sentiment, confidence, user_input)
             
-            if confidence < st.session_state.escalation_threshold:
-                response += "\n\n🚨 **Escalated to human agent** - Low confidence in automated response."
+            # if confidence < st.session_state.escalation_threshold:
+            #     response += "\n\n🚨 **Escalated to human agent** - Low confidence in automated response."
             
             end_time = time.time()
             response_time = end_time - start_time
